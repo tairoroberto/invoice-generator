@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="pt-BR">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Invoice Studio</title>
+<style>
+    * {
+        box-sizing: border-box
+    }
+
+    body {
+        margin: 0;
+        background: #f2f5f7;
+        color: #142c35;
+        font: 15px system-ui
+    }
+
+    header {
+        padding: 28px 4%;
+        background: #133c42;
+        color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center
+    }
+
+    h1 {
+        margin: 0;
+        font-size: 26px
+    }
+
+    header small {
+        color: #b9d6d7
+    }
+
+    main {
+        padding: 28px 4%;
+        display: grid;
+        grid-template-columns:440px 1fr;
+        gap: 25px
+    }
+
+    .card {
+        background: white;
+        border: 1px solid #dce5e8;
+        border-radius: 14px;
+        padding: 24px;
+        margin-bottom: 20px
+    }
+
+    h2 {
+        font-size: 18px;
+        margin: 0 0 18px
+    }
+
+    label {
+        display: block;
+        font-size: 13px;
+        font-weight: 600;
+        margin: 12px 0 5px
+    }
+
+    input, textarea, select {
+        width: 100%;
+        border: 1px solid #c9d5da;
+        border-radius: 7px;
+        padding: 10px;
+        font: inherit
+    }
+
+    select {
+        appearance: none;
+        -webkit-appearance: none;
+        padding-right: 40px;
+        background-color: white;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%235a737e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        background-size: 16px 16px;
+        cursor: pointer;
+    }
+
+    select:focus-visible {
+        outline: 2px solid #176c6a;
+        outline-offset: 2px;
+    }
+
+    textarea {
+        min-height: 70px;
+        resize: vertical
+    }
+
+    .row {
+        display: grid;
+        grid-template-columns:1fr 1fr;
+        gap: 12px
+    }
+
+    button, a.button {
+        border: 0;
+        border-radius: 7px;
+        padding: 11px 16px;
+        background: #176c6a;
+        color: white;
+        cursor: pointer;
+        font: 600 14px system-ui;
+        text-decoration: none;
+        display: inline-block
+    }
+
+    button.secondary {
+        background: #e7eff0;
+        color: #16494d
+    }
+
+    .actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 20px;
+        flex-wrap: wrap
+    }
+
+    iframe {
+        width: 100%;
+        height: 850px;
+        border: 0;
+        background: #e8edef;
+        border-radius: 8px
+    }
+
+    #status {
+        padding: 12px 0;
+        white-space: pre-wrap
+    }
+
+    details summary {
+        cursor: pointer;
+        font-weight: 600
+    }
+
+    .accounts-table {width:100%;border-collapse:collapse;font-size:13px}
+    .accounts-table th{text-align:left;color:#5a737e;padding:8px 4px}
+    .accounts-table td{padding:8px 4px;border-top:1px solid #e5ecee;vertical-align:top}
+    .accounts-table input,.accounts-table select{padding:8px;font-size:13px}
+    .accounts-table select{padding-right:38px;min-width:88px}
+    .accounts-table button{padding:8px;font-size:12px}
+    .account-fields{padding:4px 0 16px}
+    .account-fields label{margin-top:8px}
+    button.danger{background:#fff0ee;color:#a03027}
+    #accountStatus{font-size:13px;margin-top:12px;white-space:pre-wrap}
+    .history-item {
+        border-top: 1px solid #e5ecee;
+        padding: 12px 0;
+        display: flex;
+        justify-content: space-between;
+        gap: 12px
+    }
+
+    p.hint {
+        font-size: 13px;
+        color: #5a737e
+    }
+
+    @media (max-width: 950px) {
+        main {
+            grid-template-columns:1fr
+        }
+
+        iframe {
+            height: 650px
+        }
+    }
+</style>
+<header>
+    <div><h1>Invoice Studio</h1><small>Seu gerador local • ARQ</small></div>
+    <span>EUR / USD</span></header>
+<main>
+    <section>
+        <form id="form" class="card"><h2>Nova invoice</h2><label>Conta de recebimento</label><select name="accountId"
+                                                                                                     id="account"></select>
+            <p class="hint" id="currency"></p>
+            <div class="row">
+                <div><label>Número da invoice</label><input name="number" required maxlength="80"></div>
+                <div><label>Valor</label><input name="amount" type="number" step="0.01" min="0.01" required></div>
+            </div>
+            <div class="row">
+                <div><label>Emissão</label><input name="issued" type="date" required></div>
+                <div><label>Vencimento</label><input name="due" type="date" required></div>
+            </div>
+            <label>Serviço / descrição</label><textarea name="description"
+                                                        required></textarea><label>Cliente</label><input name="client"
+                                                                                                         required><label>Endereço
+                do cliente</label><textarea name="clientAddress"></textarea>
+            <details>
+                <summary>Dados do emitente</summary>
+                <label>Nome</label><input name="sender" required><label>CPF</label><input
+                    name="tax"><label>Endereço</label><textarea name="address"></textarea><label>Email</label><input
+                    name="email" type="email"></details>
+            <label>Observações (opcional)</label><textarea name="notes"
+                                                           placeholder="Ex.: Services provided in October 2026"></textarea>
+            <div class="actions">
+                <button type="button" id="preview">Visualizar PDF</button>
+                <button type="submit">Salvar e baixar PDF</button>
+            </div>
+            <div id="status" role="status" aria-live="polite"></div>
+        </form>
+        <div class="card">
+            <details>
+                <summary>Gerenciar contas</summary>
+                <p class="hint">Adicione ou edite contas na tabela. Clique em Salvar contas para aplicar as alterações. Invoices anteriores preservam os dados bancários da emissão.</p>
+                <form id="accountsForm" novalidate>
+                    <table class="accounts-table"><thead><tr><th>Conta</th><th>Moeda</th><th>Ações</th></tr></thead><tbody id="accountsRows"></tbody></table>
+                    <div class="actions"><button type="button" class="secondary" id="addAccount">+ Adicionar</button><button type="submit" id="saveAccounts">Salvar contas</button></div>
+                </form>
+                <div id="accountStatus" role="status" aria-live="polite"></div>
+                <div class="actions"><button class="secondary" id="export">Exportar backup JSON</button></div>
+                <label>Importar backup de contas</label><input id="import" type="file" accept=".json,application/json"></details>
+        </div>
+    </section>
+    <section>
+        <div class="card"><h2>Prévia do documento</h2>
+            <p class="hint">Confira os dados antes de enviar para Carolline ou Kate. A prévia mostra o PDF que será
+                gerado.</p>
+            <iframe id="pdf" title="Prévia da invoice"></iframe>
+        </div>
+        <div class="card"><h2>Invoices salvas</h2>
+            <div id="history"></div>
+        </div>
+    </section>
+</main>
+<script>
+    let state, blobUrl, accountDraft;
+    const form = document.querySelector('#form'), status = document.querySelector('#status');
+
+    async function api(path, data) {
+        const r = await fetch(path, data ? {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data)
+        } : {});
+        if (!r.ok) {
+            const e = await r.json();
+            throw Error(e.error)
+        }
+        return r
+    }
+
+    function message(s) {
+        status.textContent = s
+    }
+
+    function download(url, name) {
+        let a = document.createElement('a');
+        a.href = url;
+        a.download = name;
+        a.click()
+    }
+
+    function render() {
+        const select = document.querySelector('#account');
+        select.replaceChildren();
+        state.accounts.forEach(a => {
+            const o = document.createElement('option');
+            o.value = a.id;
+            o.textContent = a.label + ' — ' + a.currency;
+            select.append(o)
+        });
+
+        const h = document.querySelector('#history');
+        h.replaceChildren();
+        state.invoices.forEach(i => {
+            let row = document.createElement('div');
+            row.className = 'history-item';
+            let text = document.createElement('span');
+            text.textContent = i.number + ' • ' + i.issued + ' • ' + i.account.currency + ' ' + Number(i.amount).toFixed(2);
+            let b = document.createElement('button');
+            b.className = 'secondary';
+            b.textContent = 'Abrir / baixar';
+            b.onclick = async () => {
+                try {
+                    await show(await api('/api/invoice/' + i.id));
+                    download(blobUrl, 'Invoice-' + safe(i.number) + '.pdf')
+                } catch (e) {
+                    message(e.message)
+                }
+            };
+            row.append(text, b);
+            h.append(row)
+        });
+        if (!state.invoices.length) h.textContent = 'Suas invoices aparecerão aqui.';
+        currency()
+    }
+
+    function currency() {
+        const a = state.accounts.find(a => a.id === form.elements.accountId.value);
+        document.querySelector('#currency').textContent = a ? 'Invoice em ' + a.currency + ' • sem conversão automática de valores.' : ''
+    }
+
+    function safe(s) {
+        return s.replace(/[^a-zA-Z0-9_-]/g, '_')
+    }
+
+    async function show(r) {
+        if (blobUrl) URL.revokeObjectURL(blobUrl);
+        blobUrl = URL.createObjectURL(await r.blob());
+        document.querySelector('#pdf').src = blobUrl
+    }
+
+    async function preview() {
+        if (!form.reportValidity()) return;
+        try {
+            await show(await api('/api/preview', Object.fromEntries(new FormData(form))));
+            message('Prévia atualizada.')
+        } catch (e) {
+            message(e.message)
+        }
+    }
+
+    document.querySelector('#preview').onclick = preview;
+    document.querySelector('#account').onchange = currency;
+    form.onsubmit = async e => {
+        e.preventDefault();
+        let buttons = form.querySelectorAll('button');
+        buttons.forEach(b => b.disabled = true);
+        try {
+            const result = await (await api('/api/generate', Object.fromEntries(new FormData(form)))).json();
+            await show(await api('/api/invoice/' + result.id));
+            download(blobUrl, 'Invoice-' + safe(form.elements.number.value) + '.pdf');
+            state = await (await api('/api/state')).json();
+            const selected = form.elements.accountId.value;
+            render();
+            form.elements.accountId.value = selected;
+            currency();
+            message('Invoice salva no histórico e PDF baixado. Para uma nova invoice, altere o número.')
+        } catch (e) {
+            message(e.message)
+        } finally {
+            buttons.forEach(b => b.disabled = false)
+        }
+    };
+    const accountsForm=document.querySelector('#accountsForm');
+    function accountMessage(text){document.querySelector('#accountStatus').textContent=text}
+    function template(currency){return currency==='EUR'?{'Recipient name':'','IBAN':'','Bank name':'','Bank address':''}:{'Beneficiary name':'','Bank name':'','Account number':'','Routing number':'','Account type':'Checking','Address':''}}
+    function drawAccounts(){
+        const body=document.querySelector('#accountsRows');body.replaceChildren();
+        accountDraft.forEach((a,index)=>{
+            const row=document.createElement('tr');
+            const nameCell=document.createElement('td'),currencyCell=document.createElement('td'),actionCell=document.createElement('td');
+            const name=document.createElement('input');name.value=a.label;name.required=true;name.maxLength=100;name.setAttribute('aria-label','Nome da conta '+(index+1));name.oninput=()=>{a.label=name.value;accountMessage('Alterações pendentes. Clique em Salvar contas.')};nameCell.append(name);
+            const select=document.createElement('select');select.setAttribute('aria-label','Moeda da conta '+(index+1));['EUR','USD'].forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;select.append(o)});select.value=a.currency;
+            select.onchange=()=>{const old=a.details;a.currency=select.value;const next=template(a.currency);for(const key of Object.keys(next))if(old[key])next[key]=old[key];next[a.currency==='EUR'?'Recipient name':'Beneficiary name']=old['Recipient name']||old['Beneficiary name']||'';a.details=next;drawAccounts();accountMessage('Moeda alterada. Confira os dados bancários antes de salvar.')};currencyCell.append(select);
+            const edit=document.createElement('button');edit.type='button';edit.className='secondary';edit.textContent='Editar';edit.setAttribute('aria-expanded','false');
+            const remove=document.createElement('button');remove.type='button';remove.className='danger';remove.textContent='Excluir';remove.disabled=accountDraft.length===1;remove.setAttribute('aria-label','Excluir '+(a.label||'conta'));remove.onclick=()=>{accountDraft.splice(index,1);drawAccounts();accountMessage('Conta removida da tabela. Clique em Salvar contas para aplicar.')};actionCell.append(edit,remove);row.append(nameCell,currencyCell,actionCell);body.append(row);
+            const detailRow=document.createElement('tr');detailRow.hidden=true;const cell=document.createElement('td');cell.colSpan=3;const fields=document.createElement('div');fields.className='account-fields';
+            const translations={'Recipient name':'Nome do beneficiário','Beneficiary name':'Nome do beneficiário','IBAN':'IBAN','Bank name':'Banco','Bank address':'Endereço do banco','Account number':'Número da conta','Routing number':'Routing number','Account type':'Tipo de conta','Address':'Endereço','SWIFT Code':'SWIFT (opcional)'};
+            Object.entries({...template(a.currency),...a.details}).forEach(([key,value])=>{const label=document.createElement('label');label.textContent=translations[key]||key;const input=document.createElement('input');input.value=value;input.maxLength=500;input.required=['Recipient name','Beneficiary name','IBAN','Bank name','Account number','Routing number'].includes(key);input.setAttribute('aria-label',(translations[key]||key)+' — '+(a.label||'Nova conta'));input.oninput=()=>{a.details[key]=input.value;accountMessage('Alterações pendentes. Clique em Salvar contas.')};label.append(input);fields.append(label)});
+            cell.append(fields);detailRow.append(cell);body.append(detailRow);edit.onclick=()=>{detailRow.hidden=!detailRow.hidden;edit.setAttribute('aria-expanded',String(!detailRow.hidden));edit.textContent=detailRow.hidden?'Editar':'Fechar'};
+        });
+    }
+    document.querySelector('#addAccount').onclick=()=>{accountDraft.push({id:crypto.randomUUID(),label:'Nova conta',currency:'EUR',details:template('EUR')});drawAccounts();const rows=document.querySelector('#accountsRows');rows.lastElementChild.hidden=false;rows.lastElementChild.previousElementSibling.querySelector('button').setAttribute('aria-expanded','true');accountMessage('Preencha os dados da nova conta e clique em Salvar contas.')};
+    accountsForm.onsubmit=async e=>{
+        e.preventDefault();
+        for(const row of document.querySelectorAll('#accountsRows tr'))row.hidden=false;
+        if(!accountsForm.reportValidity())return;
+        const button=document.querySelector('#saveAccounts');button.disabled=true;
+        try{
+            const selected=form.elements.accountId.value;
+            const clean=accountDraft.map(a=>({...a,label:a.label.trim(),details:Object.fromEntries(Object.entries(a.details).map(([k,v])=>[k,v.trim()]))}));
+            if(clean.some(a=>!a.label||Object.entries(template(a.currency)).some(([k])=>['Recipient name','Beneficiary name','IBAN','Bank name','Account number','Routing number'].includes(k)&&!a.details[k])))throw Error('Preencha o nome e os dados bancários obrigatórios.');
+            state=await(await api('/api/accounts',{accounts:clean})).json();accountDraft=structuredClone(state.accounts);render();drawAccounts();
+            if(state.accounts.some(a=>a.id===selected))form.elements.accountId.value=selected;
+            currency();await preview();accountMessage('Contas salvas no arquivo JSON local.');
+        }catch(e){accountMessage(e.message)}finally{button.disabled=false}
+    };
+    document.querySelector('#export').onclick = () => {
+        let u = URL.createObjectURL(new Blob([JSON.stringify(state.accounts, null, 2)], {type: 'application/json'}));
+        download(u, 'arq-accounts.json');
+        setTimeout(() => URL.revokeObjectURL(u), 1000)
+    };
+    document.querySelector('#import').onchange = async e => {
+        try {
+            if(!e.target.files.length)return;
+            const imported=JSON.parse(await e.target.files[0].text());
+            if(!Array.isArray(imported)||!imported.length||imported.some(a=>!a||typeof a.id!=='string'||!a.id||typeof a.label!=='string'||!['EUR','USD'].includes(a.currency)||!a.details||Array.isArray(a.details)||typeof a.details!=='object'||Object.values(a.details).some(v=>typeof v!=='string'))||new Set(imported.map(a=>a.id)).size!==imported.length)throw Error('Formato inválido');
+            accountDraft=imported;drawAccounts();accountMessage('Backup carregado para revisão. Clique em Salvar contas para aplicar.');
+        } catch (e) { accountMessage('Arquivo de contas inválido. As contas salvas foram preservadas.') }
+        e.target.value='';
+    };
+    (async () => {
+        try {
+            state = await (await api('/api/state')).json();
+            accountDraft=structuredClone(state.accounts);drawAccounts();
+            render();
+            Object.entries(state.defaults).forEach(([k, v]) => {
+                if (form.elements[k]) form.elements[k].value = v
+            });
+            const today = new Date(),
+                local = new Date(today.getTime() - today.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+            form.elements.issued.value = local;
+            form.elements.due.value = local;
+            form.elements.number.value = local.slice(0, 7).replace('-', '') + '-' + String(state.invoices.length + 1).padStart(3, '0');
+            currency();
+            await preview()
+        } catch (e) {
+            message(e.message)
+        }
+    })();
+</script>
+</html>
