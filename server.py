@@ -17,7 +17,7 @@ def write_state(s):
     temp=STATE.with_suffix('.tmp'); temp.write_text(json.dumps(s,ensure_ascii=False,indent=2)); temp.replace(STATE)
 if not STATE.exists():
     write_state({'accounts':[
-        {'id':'arq-eur','label':'ARQ • Euro','currency':'EUR','details':{'Recipient name':'TAIRO ROBERTO MIGUEL DE ASSUNÇÃO','IBAN':'LU47 4080 0000 4889 6497','Bank name':'Banking Circle S.A.','Bank address':'Bartycka 22B/21A, Warsaw, 00-716, Poland'}},
+        {'id':'arq-eur','label':'ARQ • Euro','currency':'EUR','details':{'Recipient name':'TAIRO ROBERTO MIGUEL DE ASSUNÇÃO','IBAN':'LU47 4080 0000 4889 6497','BIC':'BCIRLULL','Bank name':'Banking Circle S.A.','Bank address':'Bartycka 22B/21A, Warsaw, 00-716, Poland'}},
         {'id':'arq-usd','label':'ARQ • US Dollar','currency':'USD','details':{'Beneficiary name':'Tairo Assunção','Bank name':'Lead Bank','Account number':'215487907141','Routing number':'101019644','Account type':'Checking','Address':'Rua José Leite da Silva, 219, São José dos Campos, São Paulo 12209-110, Brazil'}}],
         'defaults':{'sender':'Tairo Roberto Miguel De Assunção','tax':'019.602.181-23','address':'Rua José Leite da Silva, nº 219, Jardim Bela Vista. São José dos Campos - SP, Brazil. Zip Code: 12209-110','email':'tairoroberto@gmail.com','client':'PSYTECH DIGITAL','clientAddress':'Ashgrove House, Ashgrove Industrial Estate, Dun Laoghaire Co Dublin A96N9K0','description':'Software development\nMobile Development Leader','amount':'5100.00','accountId':'arq-eur'},'invoices':[]})
 def state(): return json.loads(STATE.read_text())

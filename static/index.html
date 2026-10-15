@@ -340,7 +340,7 @@
     };
     const accountsForm=document.querySelector('#accountsForm');
     function accountMessage(text){document.querySelector('#accountStatus').textContent=text}
-    function template(currency){return currency==='EUR'?{'Recipient name':'','IBAN':'','Bank name':'','Bank address':''}:{'Beneficiary name':'','Bank name':'','Account number':'','Routing number':'','Account type':'Checking','Address':''}}
+    function template(currency){return currency==='EUR'?{'Recipient name':'','IBAN':'','BIC':'','Bank name':'','Bank address':''}:{'Beneficiary name':'','Bank name':'','Account number':'','Routing number':'','Account type':'Checking','Address':''}}
     function drawAccounts(){
         const body=document.querySelector('#accountsRows');body.replaceChildren();
         accountDraft.forEach((a,index)=>{
@@ -352,7 +352,7 @@
             const edit=document.createElement('button');edit.type='button';edit.className='secondary';edit.textContent='Editar';edit.setAttribute('aria-expanded','false');
             const remove=document.createElement('button');remove.type='button';remove.className='danger';remove.textContent='Excluir';remove.disabled=accountDraft.length===1;remove.setAttribute('aria-label','Excluir '+(a.label||'conta'));remove.onclick=()=>{accountDraft.splice(index,1);drawAccounts();accountMessage('Conta removida da tabela. Clique em Salvar contas para aplicar.')};actionCell.append(edit,remove);row.append(nameCell,currencyCell,actionCell);body.append(row);
             const detailRow=document.createElement('tr');detailRow.hidden=true;const cell=document.createElement('td');cell.colSpan=3;const fields=document.createElement('div');fields.className='account-fields';
-            const translations={'Recipient name':'Nome do beneficiário','Beneficiary name':'Nome do beneficiário','IBAN':'IBAN','Bank name':'Banco','Bank address':'Endereço do banco','Account number':'Número da conta','Routing number':'Routing number','Account type':'Tipo de conta','Address':'Endereço','SWIFT Code':'SWIFT (opcional)'};
+            const translations={'Recipient name':'Nome do beneficiário','Beneficiary name':'Nome do beneficiário','IBAN':'IBAN','BIC':'BIC / SWIFT','Bank name':'Banco','Bank address':'Endereço do banco','Account number':'Número da conta','Routing number':'Routing number','Account type':'Tipo de conta','Address':'Endereço','SWIFT Code':'SWIFT (opcional)'};
             Object.entries({...template(a.currency),...a.details}).forEach(([key,value])=>{const label=document.createElement('label');label.textContent=translations[key]||key;const input=document.createElement('input');input.value=value;input.maxLength=500;input.required=['Recipient name','Beneficiary name','IBAN','Bank name','Account number','Routing number'].includes(key);input.setAttribute('aria-label',(translations[key]||key)+' — '+(a.label||'Nova conta'));input.oninput=()=>{a.details[key]=input.value;accountMessage('Alterações pendentes. Clique em Salvar contas.')};label.append(input);fields.append(label)});
             cell.append(fields);detailRow.append(cell);body.append(detailRow);edit.onclick=()=>{detailRow.hidden=!detailRow.hidden;edit.setAttribute('aria-expanded',String(!detailRow.hidden));edit.textContent=detailRow.hidden?'Editar':'Fechar'};
         });
